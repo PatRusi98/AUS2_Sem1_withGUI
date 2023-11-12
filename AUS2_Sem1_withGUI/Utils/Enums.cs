@@ -8,4 +8,10 @@
         West,
         Unknown
     }
+
+    public enum GeoType
+    {
+        Parcel,
+        Estate
+    }
 }

@@ -1,23 +1,29 @@
 ﻿using AUS2_Sem1_withGUI.Data_Structures.QuadTree;
+using AUS2_Sem1_withGUI.Utils;
 
 namespace AUS2_Sem1_withGUI.GeoProject
 {
     public class GeoObject : IQuadTreeData<double>
     {
+        private static int LastId = 0;
+
         public double X { get; set; }
         public double Y { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
-        public int IdNumber { get; set; }
+        public int IdNumberByUser { get; set; }
+        public int Id { get; set; }
         public string Description { get; set; }
         public GPSPosition TopLeft { get; set; }
         public GPSPosition BottomRight { get; set; }
+        public GeoType Type { get; set; }
 
-        public GeoObject(double x, double y, int id, string desc,
+        public GeoObject(int id, string desc, GeoType type,
             (double lat, double lon, char latPos, char lonPos) topLeft, 
             (double lat, double lon, char latPos, char lonPos) topRight)
         {
-            IdNumber = id;
+            IdNumberByUser = id;
+            Id = ++LastId;
             Description = desc;
             TopLeft = new GPSPosition(topLeft.lat, topLeft.lon, topLeft.latPos, topLeft.lonPos);
             BottomRight = new GPSPosition(topRight.lat, topRight.lon, topRight.latPos, topRight.lonPos);
@@ -25,6 +31,7 @@ namespace AUS2_Sem1_withGUI.GeoProject
             Y = TopLeft.Y;
             Width = Math.Abs(BottomRight.X - TopLeft.X);
             Height = Math.Abs(BottomRight.Y - TopLeft.Y);
+            Type = type;
         }
 
         public GeoObject getById(int id)

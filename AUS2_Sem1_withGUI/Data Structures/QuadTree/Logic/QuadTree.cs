@@ -1,5 +1,5 @@
 ﻿using AUS2_Sem1_withGUI.Data_Structures.QuadTree.Interfaces;
-using AUS2_Sem1.Utils;
+using AUS2_Sem1_withGUI.Utils;
 
 namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
 {
@@ -9,11 +9,11 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
         private int MaxRegionsPerNode;
         private IMathOperations<T> MathOperations;
 
-        public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode, IMathOperations<T> mathOperations)
+        public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
         {
             Root = new QuadTreeNode<T>(boundary);
             MaxRegionsPerNode = maxRegionsPerNode;
-            MathOperations = mathOperations;
+            MathOperations = (IMathOperations<T>)new MathOperationsDouble();
         }
 
         #region Insert

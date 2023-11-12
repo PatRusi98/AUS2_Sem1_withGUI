@@ -27,5 +27,10 @@ namespace AUS2_Sem1_withGUI.GeoProject
             }
             return Y.CompareTo(other.Y);
         }
+
+        public string ToString()
+        {
+            return $"{X} {XPosition}, {Y} {YPosition}";
+        }
     }
 }
