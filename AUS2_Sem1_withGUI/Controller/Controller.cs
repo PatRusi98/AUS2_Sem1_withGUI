@@ -133,6 +133,73 @@ namespace AUS2_Sem1.GeoProject
             return result.ToList();
         }
 
+        #region Save/Load
+        public void SaveData(string filePath)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("GeoPR_AUS2_SEM1");
+
+                Stack<QuadTreeNode<T>> stack = new Stack<QuadTreeNode<T>>();
+                stack.Push(Root);
+
+                while (stack.Count > 0)
+                {
+                    QuadTreeNode<T> currentNode = stack.Pop();
+
+                    foreach (var region in currentNode.Regions)
+                    {
+                        if (region is Parcel parcel)
+                        {
+                            writer.Write("PARCEL:");
+                            writer.Write($"{parcel.IdNumberByUser},-,{parcel.Description},-,{parcel.TopLeft.X},-,{parcel.TopLeft.Y},-,{parcel.TopLeft.XPosition},-,{parcel.TopLeft.YPosition}");
+                            writer.WriteLine();
+                        }
+                        else if (region is Estate estate)
+                        {
+                            writer.Write("ESTATE:");
+                            writer.Write($"{estate.IdNumberByUser},-,{estate.Description},-,{estate.TopLeft.X},-,{estate.TopLeft.Y},-,{estate.TopLeft.XPosition},-,{estate.TopLeft.YPosition}");
+                            writer.WriteLine();
+                        }
+                    }
+
+                    if (!currentNode.IsLeaf)
+                    {
+                        foreach (var child in currentNode.Children)
+                        {
+                            stack.Push(child);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void LoadData(string filePath)
+        {
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string line = reader.ReadLine();
+                if (line != "GeoPR_AUS2_SEM1")
+                {
+                    throw new Exception("Invalid file format.");
+                }
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] data = line.Split(',');
+                    if (data[0] == "PARCEL")
+                    {
+                        AddParcel(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
+                    }
+                    else if (data[0] == "ESTATE")
+                    {
+                        AddEstate(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
+                    }
+                }
+            }
+        }   
+        #endregion Save/Load
+
         #region Private
 
         private List<IQuadTreeData<double>> FindByPosition(double lat, double lon)

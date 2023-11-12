@@ -6,7 +6,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
     public class QuadTree<T> where T : IComparable
     {
         public QuadTreeNode<T> Root;
-        private int MaxRegionsPerNode;
+        protected int MaxRegionsPerNode;
         private IMathOperations<T> MathOperations;
 
         public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
@@ -183,7 +183,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
         #endregion
 
         #region Private methods
-        private void Subdivide(QuadTreeNode<T> node)
+        protected void Subdivide(QuadTreeNode<T> node)
         {
             T subWidth = MathOperations.Divide(node.Boundary.Width, (dynamic) 2);
             T subHeight = MathOperations.Divide(node.Boundary.Height, (dynamic) 2);
