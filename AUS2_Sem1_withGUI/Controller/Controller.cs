@@ -3,35 +3,41 @@ using AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic;
 using AUS2_Sem1_withGUI.GeoProject;
 using AUS2_Sem1_withGUI.Utils;
 using System.Collections.Concurrent;
-using static System.Windows.Forms.AxHost;
+using System.Diagnostics;
 
 namespace AUS2_Sem1.GeoProject
 {
     public class Controller
     {
-        private QuadTreeOptimalization<double> quadTree;
+        private QuadTree<double> quadTree;
 
         public Controller(QuadTreeRectangle<double> boundary, int maxRegionsPerNode)
         {
-            quadTree = new QuadTreeOptimalization<double>(boundary, maxRegionsPerNode);
+            quadTree = new QuadTree<double>(boundary, maxRegionsPerNode);
         }
 
         public void AddEstate(int userId, string desc,
             (double lat, double lon, char latPos, char lonPos) topLeft,
             (double lat, double lon, char latPos, char lonPos) topRight)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var estate = new Estate(userId, desc, GeoType.Estate, topLeft, topRight);
             quadTree.Insert(estate);
             Console.WriteLine($"Estate with CustomId {estate.Id} added.");
-            //ConcurrentBag<Parcel> parcelsToUpdate = new ConcurrentBag<Parcel>(
-            //    quadTree.FindByRectangle(new QuadTreeRectangle<double>(estate.TopLeft.X, estate.TopLeft.Y, estate.Width, estate.Height))
-            //    .OfType<Parcel>()
-            //);
+            ConcurrentBag<Parcel> parcelsToUpdate = new ConcurrentBag<Parcel>(
+                quadTree.FindByRectangle(new QuadTreeRectangle<double>(estate.TopLeft.X, estate.TopLeft.Y, estate.Width, estate.Height))
+                .OfType<Parcel>()
+            );
 
-            //Parallel.ForEach(parcelsToUpdate, parcel =>
-            //{
-            //    parcel.AddEstate(estate);
-            //});
+            Parallel.ForEach(parcelsToUpdate, parcel =>
+            {
+                parcel.AddEstate(estate);
+            });
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
 
@@ -39,23 +45,32 @@ namespace AUS2_Sem1.GeoProject
             (double lat, double lon, char latPos, char lonPos) topLeft,
             (double lat, double lon, char latPos, char lonPos) topRight)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var parcel = new Parcel(userId, desc, GeoType.Parcel, topLeft, topRight);
             quadTree.Insert(parcel);
             Console.WriteLine($"Parcel with CustomId {parcel.Id} added.");
-            //ConcurrentBag<Estate> estatesToUpdate = new ConcurrentBag<Estate>(
-            //    quadTree.FindByRectangle(new QuadTreeRectangle<double>(parcel.TopLeft.X, parcel.TopLeft.Y, parcel.Width, parcel.Height))
-            //    .OfType<Estate>()
-            //);
+            ConcurrentBag<Estate> estatesToUpdate = new ConcurrentBag<Estate>(
+                quadTree.FindByRectangle(new QuadTreeRectangle<double>(parcel.TopLeft.X, parcel.TopLeft.Y, parcel.Width, parcel.Height))
+                .OfType<Estate>()
+            );
 
-            //Parallel.ForEach(estatesToUpdate, estate =>
-            //{
-            //    estate.AddParcel(parcel);
-            //});
+            Parallel.ForEach(estatesToUpdate, estate =>
+            {
+                estate.AddParcel(parcel);
+            });
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
 
         public void DeleteEstate(int id, double x, double y)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var toDelete = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
             if (toDelete != null)
             {
@@ -63,7 +78,14 @@ namespace AUS2_Sem1.GeoProject
 
                 Parallel.ForEach(parcelsToRemove, parcel =>
                 {
-                    parcel.GetEstates().Remove(toDelete);
+                    try
+                    {
+                        parcel.GetEstates().Remove(toDelete);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 });
 
                 quadTree.Delete(toDelete);
@@ -72,10 +94,16 @@ namespace AUS2_Sem1.GeoProject
             {
                 Console.WriteLine($"Estate with CustomId {id} not found.");
             }
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         public void DeleteParcel(int id, double x, double y)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var toDelete = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
             if (toDelete != null)
             {
@@ -83,7 +111,14 @@ namespace AUS2_Sem1.GeoProject
 
                 Parallel.ForEach(estatesToRemove, estate =>
                 {
-                    estate.GetParcels().Remove(toDelete);
+                    try
+                    {
+                        estate.GetParcels().Remove(toDelete);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 });
 
                 quadTree.Delete(toDelete);
@@ -92,54 +127,109 @@ namespace AUS2_Sem1.GeoProject
             {
                 Console.WriteLine($"Parcel with CustomId {id} not found.");
             }
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         public void EditEstate(int id, string desc, int userId, double x, double y)
         {
-            var estate = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
-            if (estate != null)
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            //var estate = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
+            var estate = FindEstateByPosition(x, y);
+            foreach (var item in estate)
             {
-                estate.IdNumberByUser = userId;
-                estate.Description = desc;
+                if (item.Id == id)
+                {
+                    item.IdNumberByUser = userId;
+                    item.Description = desc;
+                }
             }
-            else
-            {
-                Console.WriteLine($"Estate with CustomId {id} not found.");
-            }
+            //if (estate != null)
+            //{
+            //    estate.IdNumberByUser = userId;
+            //    estate.Description = desc;
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Estate with CustomId {id} not found.");
+            //}
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         public void EditParcel(int id, string desc, int userId, double x, double y)
         {
-            var parcel = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
-            if (parcel != null)
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            //var parcel = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
+            var parcel = FindParcelByPosition(x, y);
+
+            foreach (var item in parcel)
             {
-                parcel.IdNumberByUser = userId;
-                parcel.Description = desc;
+                if (item.Id == id)
+                {
+                    item.IdNumberByUser = userId;
+                    item.Description = desc;
+                }
             }
-            else
-            {
-                Console.WriteLine($"Parcel with CustomId {id} not found.");
-            }
+            //if (parcel != null)
+            //{
+            //    parcel.IdNumberByUser = userId;
+            //    parcel.Description = desc;
+            //}
+            //else
+            //{
+            //    Console.WriteLine($"Parcel with CustomId {id} not found.");
+            //}
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         public List<Parcel> FindParcelByPosition(double lat, double lon)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var unfiltered = FindByPosition(lat, lon);
             var result = unfiltered.OfType<Parcel>();
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
             return result.ToList();
         }
 
         public List<Estate> FindEstateByPosition(double lat, double lon)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var unfiltered = FindByPosition(lat, lon);
             var result = unfiltered.OfType<Estate>();
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
             return result.ToList();
         }
 
         public List<GeoObject> FindGeoObjectByRegion(double lat1, double lon1, double lat2, double lon2)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var unfiltered = FindByRegion(lat1, lon1, lat2, lon2);
             var result = unfiltered.OfType<GeoObject>();
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
             return result.ToList();
         }
 
