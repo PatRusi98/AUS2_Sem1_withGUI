@@ -8,7 +8,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
         public QuadTreeNode<T> Root;
         protected int MaxRegionsPerNode;
         private IMathOperations<T> MathOperations;
-        private int MaxHeight = 15;
+        protected int MaxHeight = 15;
 
         public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
         {
@@ -66,7 +66,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
             }
         }
 
-        private void DistributeRegionsAmongParents(QuadTreeNode<T> node)
+        protected void DistributeRegionsAmongParents(QuadTreeNode<T> node)
         {
             var current = node;
 
@@ -91,7 +91,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
             }
         }
 
-        private IEnumerable<QuadTreeNode<T>> GetParents(QuadTreeNode<T> node)
+        protected IEnumerable<QuadTreeNode<T>> GetParents(QuadTreeNode<T> node)
         {
             var ancestors = new List<QuadTreeNode<T>>();
             var current = node.Parent;
@@ -105,7 +105,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
             return ancestors;
         }
 
-        private void DistributeRegions(QuadTreeNode<T> node)
+        protected void DistributeRegions(QuadTreeNode<T> node)
         {
             var overlappingRegions = new List<IQuadTreeData<T>>(node.Regions);
             node.Regions.Clear();

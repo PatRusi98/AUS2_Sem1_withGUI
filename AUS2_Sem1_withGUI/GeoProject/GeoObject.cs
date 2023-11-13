@@ -16,6 +16,8 @@ namespace AUS2_Sem1_withGUI.GeoProject
         public string Description { get; set; }
         public GPSPosition TopLeft { get; set; }
         public GPSPosition BottomRight { get; set; }
+        public string TopLeftString { get; set; }
+        public string BottomRightString { get; set; }
         public GeoType Type { get; set; }
 
         public GeoObject(int id, string desc, GeoType type,
@@ -31,6 +33,8 @@ namespace AUS2_Sem1_withGUI.GeoProject
             Y = TopLeft.Y;
             Width = Math.Abs(BottomRight.X - TopLeft.X);
             Height = Math.Abs(BottomRight.Y - TopLeft.Y);
+            TopLeftString = TopLeft.ToString();
+            BottomRightString = BottomRight.ToString();
             Type = type;
         }
 

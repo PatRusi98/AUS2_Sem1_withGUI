@@ -8,7 +8,7 @@ namespace AUS2_Sem1_withGUI.GeoProject
 
         public Parcel(int id, string desc, GeoType type,
             (double lat, double lon, char latPos, char lonPos) topLeft, 
-            (double lat, double lon, char latPos, char lonPos) topRight) 
+            (double lat, double lon, char latPos, char lonPos) topRight)
             : base(id, desc, type, topLeft, topRight)
         {
             IdNumberByUser = id;

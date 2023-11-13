@@ -242,8 +242,8 @@ namespace AUS2_Sem1_withGUI
 
         private void CreateRandomEstate(Random random)
         {
-            double x = random.NextDouble() * 1000 - 1;
-            double y = random.NextDouble() * 1000 - 1;
+            double x = random.NextDouble() * 998.69;
+            double y = random.NextDouble() * 998.69;
             int id = random.Next(1, int.MaxValue);
             GeoSystem.AddEstate(id, "randomDesc", (x, y, 'N', 'E'), (x + 1, y + 1, 'S', 'W'));
             string description = $"Estate {id}";
@@ -252,8 +252,8 @@ namespace AUS2_Sem1_withGUI
 
         private void CreateRandomParcel(Random random)
         {
-            double x = random.NextDouble() * 1000 - 1;
-            double y = random.NextDouble() * 1000 - 1;
+            double x = random.NextDouble() * 998.69;
+            double y = random.NextDouble() * 998.69;
             int id = random.Next(1, int.MaxValue);
             GeoSystem.AddParcel(id, "randomDesc", (x, y, 'N', 'E'), (x + 1, y + 1, 'S', 'W'));
             string description = $"Parcel {id}";

@@ -49,6 +49,12 @@
             randomObjectsToolStripMenuItem = new ToolStripMenuItem();
             randomOperationsToolStripMenuItem = new ToolStripMenuItem();
             dataGridView1 = new DataGridView();
+            geoObjectBindingSource3 = new BindingSource(components);
+            geoObjectBindingSource2 = new BindingSource(components);
+            openFileDialog1 = new OpenFileDialog();
+            saveFileDialog1 = new SaveFileDialog();
+            geoObjectBindingSource = new BindingSource(components);
+            geoObjectBindingSource1 = new BindingSource(components);
             typeDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             xValue = new DataGridViewTextBoxColumn();
             yValue = new DataGridViewTextBoxColumn();
@@ -57,16 +63,12 @@
             topLeftDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             bottomRightDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             idSystem = new DataGridViewTextBoxColumn();
-            geoObjectBindingSource2 = new BindingSource(components);
-            //geoObjectBindingSource1 = new BindingSource(components);
-            //geoObjectBindingSource = new BindingSource(components);
-            openFileDialog1 = new OpenFileDialog();
-            saveFileDialog1 = new SaveFileDialog();
             menu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource2).BeginInit();
-            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).BeginInit();
-            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).BeginInit();
             SuspendLayout();
             // 
             // menu
@@ -211,7 +213,7 @@
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { typeDataGridViewTextBoxColumn, xValue, yValue, idNumberByUserDataGridViewTextBoxColumn, descriptionDataGridViewTextBoxColumn, topLeftDataGridViewTextBoxColumn, bottomRightDataGridViewTextBoxColumn, idSystem });
-            dataGridView1.DataSource = geoObjectBindingSource2;
+            dataGridView1.DataSource = geoObjectBindingSource3;
             dataGridView1.Location = new Point(12, 27);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
@@ -220,6 +222,26 @@
             dataGridView1.TabIndex = 1;
             dataGridView1.CellClick += dataGridView1_CellClick;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
+            // 
+            // geoObjectBindingSource3
+            // 
+            geoObjectBindingSource3.DataSource = typeof(GeoProject.GeoObject);
+            // 
+            // geoObjectBindingSource2
+            // 
+            geoObjectBindingSource2.DataSource = typeof(GeoProject.GeoObject);
+            // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // geoObjectBindingSource
+            // 
+            geoObjectBindingSource.DataSource = typeof(GeoProject.GeoObject);
+            // 
+            // geoObjectBindingSource1
+            // 
+            geoObjectBindingSource1.DataSource = typeof(GeoProject.GeoObject);
             // 
             // typeDataGridViewTextBoxColumn
             // 
@@ -260,14 +282,14 @@
             // 
             // topLeftDataGridViewTextBoxColumn
             // 
-            topLeftDataGridViewTextBoxColumn.DataPropertyName = "TopLeft";
+            topLeftDataGridViewTextBoxColumn.DataPropertyName = "TopLeftString";
             topLeftDataGridViewTextBoxColumn.HeaderText = "GPS 1";
             topLeftDataGridViewTextBoxColumn.Name = "topLeftDataGridViewTextBoxColumn";
             topLeftDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // bottomRightDataGridViewTextBoxColumn
             // 
-            bottomRightDataGridViewTextBoxColumn.DataPropertyName = "BottomRight";
+            bottomRightDataGridViewTextBoxColumn.DataPropertyName = "BottomRightString";
             bottomRightDataGridViewTextBoxColumn.HeaderText = "GPS 2";
             bottomRightDataGridViewTextBoxColumn.Name = "bottomRightDataGridViewTextBoxColumn";
             bottomRightDataGridViewTextBoxColumn.ReadOnly = true;
@@ -279,22 +301,6 @@
             idSystem.Name = "idSystem";
             idSystem.ReadOnly = true;
             idSystem.Visible = false;
-            // 
-            // geoObjectBindingSource2
-            // 
-            geoObjectBindingSource2.DataSource = typeof(GeoProject.GeoObject);
-            // 
-            // geoObjectBindingSource1
-            // 
-            //geoObjectBindingSource1.DataSource = typeof(GeoProject.GeoObject);
-            // 
-            // geoObjectBindingSource
-            // 
-            //geoObjectBindingSource.DataSource = typeof(GeoProject.GeoObject);
-            // 
-            // openFileDialog1
-            // 
-            openFileDialog1.FileName = "openFileDialog1";
             // 
             // Form1
             // 
@@ -311,9 +317,10 @@
             menu.ResumeLayout(false);
             menu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource3).EndInit();
             ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource2).EndInit();
-            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).EndInit();
-            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -343,6 +350,11 @@
         //private BindingSource geoObjectBindingSource;
         //private BindingSource geoObjectBindingSource1;
         private BindingSource geoObjectBindingSource2;
+        private OpenFileDialog openFileDialog1;
+        private SaveFileDialog saveFileDialog1;
+        private BindingSource geoObjectBindingSource;
+        private BindingSource geoObjectBindingSource1;
+        private BindingSource geoObjectBindingSource3;
         private DataGridViewTextBoxColumn typeDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn xValue;
         private DataGridViewTextBoxColumn yValue;
@@ -351,7 +363,5 @@
         private DataGridViewTextBoxColumn topLeftDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn bottomRightDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn idSystem;
-        private OpenFileDialog openFileDialog1;
-        private SaveFileDialog saveFileDialog1;
     }
 }

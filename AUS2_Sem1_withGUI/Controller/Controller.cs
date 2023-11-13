@@ -9,11 +9,11 @@ namespace AUS2_Sem1.GeoProject
 {
     public class Controller
     {
-        private QuadTree<double> quadTree;
+        private QuadTreeOptimalization<double> quadTree;
 
         public Controller(QuadTreeRectangle<double> boundary, int maxRegionsPerNode)
         {
-            quadTree = new QuadTree<double>(boundary, maxRegionsPerNode);
+            quadTree = new QuadTreeOptimalization<double>(boundary, maxRegionsPerNode);
         }
 
         public void AddEstate(int userId, string desc,
@@ -56,7 +56,6 @@ namespace AUS2_Sem1.GeoProject
 
         public void DeleteEstate(int id, double x, double y)
         {
-            //var parcel = quadTree.FindByPoint(new GPSPosition(x, y, 'N', 'E')).Find(obj => obj is Estate && ((Estate)obj).Id == id) as Estate;
             var toDelete = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
             if (toDelete != null)
             {
@@ -77,7 +76,6 @@ namespace AUS2_Sem1.GeoProject
 
         public void DeleteParcel(int id, double x, double y)
         {
-            //var parcel = quadTree.FindByPoint(new GPSPosition(x, y, 'N', 'E')).Find(obj => obj is Parcel && ((Parcel)obj).Id == id) as Parcel;
             var toDelete = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
             if (toDelete != null)
             {
