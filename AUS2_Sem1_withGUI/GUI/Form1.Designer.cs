@@ -49,9 +49,6 @@
             randomObjectsToolStripMenuItem = new ToolStripMenuItem();
             randomOperationsToolStripMenuItem = new ToolStripMenuItem();
             dataGridView1 = new DataGridView();
-            geoObjectBindingSource2 = new BindingSource(components);
-            geoObjectBindingSource1 = new BindingSource(components);
-            geoObjectBindingSource = new BindingSource(components);
             typeDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             xValue = new DataGridViewTextBoxColumn();
             yValue = new DataGridViewTextBoxColumn();
@@ -60,11 +57,16 @@
             topLeftDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             bottomRightDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             idSystem = new DataGridViewTextBoxColumn();
+            geoObjectBindingSource2 = new BindingSource(components);
+            //geoObjectBindingSource1 = new BindingSource(components);
+            //geoObjectBindingSource = new BindingSource(components);
+            openFileDialog1 = new OpenFileDialog();
+            saveFileDialog1 = new SaveFileDialog();
             menu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).BeginInit();
+            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).BeginInit();
+            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).BeginInit();
             SuspendLayout();
             // 
             // menu
@@ -219,18 +221,6 @@
             dataGridView1.CellClick += dataGridView1_CellClick;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
-            // geoObjectBindingSource2
-            // 
-            geoObjectBindingSource2.DataSource = typeof(GeoProject.GeoObject);
-            // 
-            // geoObjectBindingSource1
-            // 
-            geoObjectBindingSource1.DataSource = typeof(GeoProject.GeoObject);
-            // 
-            // geoObjectBindingSource
-            // 
-            geoObjectBindingSource.DataSource = typeof(GeoProject.GeoObject);
-            // 
             // typeDataGridViewTextBoxColumn
             // 
             typeDataGridViewTextBoxColumn.DataPropertyName = "Type";
@@ -290,6 +280,22 @@
             idSystem.ReadOnly = true;
             idSystem.Visible = false;
             // 
+            // geoObjectBindingSource2
+            // 
+            geoObjectBindingSource2.DataSource = typeof(GeoProject.GeoObject);
+            // 
+            // geoObjectBindingSource1
+            // 
+            //geoObjectBindingSource1.DataSource = typeof(GeoProject.GeoObject);
+            // 
+            // geoObjectBindingSource
+            // 
+            //geoObjectBindingSource.DataSource = typeof(GeoProject.GeoObject);
+            // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -306,8 +312,8 @@
             menu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).EndInit();
+            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource1).EndInit();
+            //((System.ComponentModel.ISupportInitialize)geoObjectBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -334,8 +340,8 @@
         private ToolStripMenuItem randomObjectsToolStripMenuItem;
         private ToolStripMenuItem randomOperationsToolStripMenuItem;
         private DataGridView dataGridView1;
-        private BindingSource geoObjectBindingSource;
-        private BindingSource geoObjectBindingSource1;
+        //private BindingSource geoObjectBindingSource;
+        //private BindingSource geoObjectBindingSource1;
         private BindingSource geoObjectBindingSource2;
         private DataGridViewTextBoxColumn typeDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn xValue;
@@ -345,5 +351,7 @@
         private DataGridViewTextBoxColumn topLeftDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn bottomRightDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn idSystem;
+        private OpenFileDialog openFileDialog1;
+        private SaveFileDialog saveFileDialog1;
     }
 }

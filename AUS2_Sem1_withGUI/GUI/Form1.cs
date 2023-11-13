@@ -33,14 +33,18 @@ namespace AUS2_Sem1_withGUI
         #region Load
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            openFileDialog1.ShowDialog();
+            var path = openFileDialog1.FileName;
+            GeoSystem.LoadData(path);
         }
         #endregion
 
         #region Save
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            saveFileDialog1.ShowDialog();
+            var path = saveFileDialog1.FileName;
+            GeoSystem.SaveData(path);
         }
         #endregion
 
@@ -688,10 +692,12 @@ namespace AUS2_Sem1_withGUI
                         if (type == "Parcel")
                         {
                             GeoSystem.DeleteParcel(id, x, y);
+                            dataGridView1.Refresh();
                         }
                         else
                         {
                             GeoSystem.DeleteEstate(id, x, y);
+                            dataGridView1.Refresh();
                         }
                     }
                     else
@@ -705,6 +711,7 @@ namespace AUS2_Sem1_withGUI
                 }
             }
         }
+
         #endregion Table
     }
 }

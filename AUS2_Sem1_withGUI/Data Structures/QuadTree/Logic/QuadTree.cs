@@ -8,6 +8,7 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
         public QuadTreeNode<T> Root;
         protected int MaxRegionsPerNode;
         private IMathOperations<T> MathOperations;
+        private int MaxHeight = 15;
 
         public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
         {
@@ -40,19 +41,14 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
                         if (currentNode.Regions.Count > MaxRegionsPerNode)
                         {
                             Subdivide(currentNode);
-                            var overlappingRegions = new List<IQuadTreeData<T>>(currentNode.Regions);
-                            currentNode.Regions.Clear();
 
-                            foreach (var existingRegion in overlappingRegions)
+                            if (currentNode.Height >= MaxHeight)
                             {
-                                var existingRegionRectangle = new QuadTreeRectangle<T>(existingRegion.X, existingRegion.Y, existingRegion.Width, existingRegion.Height);
-                                foreach (var child in currentNode.Children)
-                                {
-                                    if (child.Boundary.IntersectsWith(existingRegionRectangle))
-                                    {
-                                        stack.Push(child);
-                                    }
-                                }
+                                DistributeRegionsAmongParents(currentNode);
+                            }
+                            else
+                            {
+                                DistributeRegions(currentNode);
                             }
                         }
                     }
@@ -69,6 +65,64 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
                 }
             }
         }
+
+        private void DistributeRegionsAmongParents(QuadTreeNode<T> node)
+        {
+            var current = node;
+
+            while (current != null)
+            {
+                var overlappingRegions = new List<IQuadTreeData<T>>(current.Regions);
+                current.Regions.Clear();
+
+                foreach (var existingRegion in overlappingRegions)
+                {
+                    var existingRegionRectangle = new QuadTreeRectangle<T>(existingRegion.X, existingRegion.Y, existingRegion.Width, existingRegion.Height);
+                    foreach (var ancestor in GetParents(current))
+                    {
+                        if (ancestor.Boundary.IntersectsWith(existingRegionRectangle))
+                        {
+                            ancestor.Regions.Add(existingRegion);
+                        }
+                    }
+                }
+
+                current = current.Parent;
+            }
+        }
+
+        private IEnumerable<QuadTreeNode<T>> GetParents(QuadTreeNode<T> node)
+        {
+            var ancestors = new List<QuadTreeNode<T>>();
+            var current = node.Parent;
+
+            while (current != null)
+            {
+                ancestors.Add(current);
+                current = current.Parent;
+            }
+
+            return ancestors;
+        }
+
+        private void DistributeRegions(QuadTreeNode<T> node)
+        {
+            var overlappingRegions = new List<IQuadTreeData<T>>(node.Regions);
+            node.Regions.Clear();
+
+            foreach (var existingRegion in overlappingRegions)
+            {
+                var existingRegionRectangle = new QuadTreeRectangle<T>(existingRegion.X, existingRegion.Y, existingRegion.Width, existingRegion.Height);
+                foreach (var child in node.Children)
+                {
+                    if (child.Boundary.IntersectsWith(existingRegionRectangle))
+                    {
+                        child.Regions.Add(existingRegion);
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Delete

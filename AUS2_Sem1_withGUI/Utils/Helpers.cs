@@ -19,7 +19,24 @@
                 default:
                     return Position.Unknown;
             }
-        } 
+        }
+
+        public static char PositionToChar(this Position c)
+        {
+            switch (c)
+            {
+                case Position.North:
+                    return 'N';
+                case Position.South:
+                    return 'S';
+                case Position.East:
+                    return 'E';
+                case Position.West:
+                    return 'W';
+                default:
+                    return 'U';
+            }
+        }
     }
 
     #region MathOperations

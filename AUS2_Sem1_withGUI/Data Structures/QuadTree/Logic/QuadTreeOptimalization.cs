@@ -3,9 +3,9 @@ using System.Collections.Concurrent;
 
 namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
 {
-    public class QuadTreeOptimization<T> : QuadTree<T> where T : IComparable
+    public class QuadTreeOptimalization<T> : QuadTree<T> where T : IComparable
     {
-        public QuadTreeOptimization(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
+        public QuadTreeOptimalization(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
             : base(boundary, maxRegionsPerNode)
         {
         }

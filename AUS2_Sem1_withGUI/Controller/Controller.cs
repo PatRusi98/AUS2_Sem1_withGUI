@@ -2,6 +2,8 @@
 using AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic;
 using AUS2_Sem1_withGUI.GeoProject;
 using AUS2_Sem1_withGUI.Utils;
+using System.Collections.Concurrent;
+using static System.Windows.Forms.AxHost;
 
 namespace AUS2_Sem1.GeoProject
 {
@@ -20,15 +22,18 @@ namespace AUS2_Sem1.GeoProject
         {
             var estate = new Estate(userId, desc, GeoType.Estate, topLeft, topRight);
             quadTree.Insert(estate);
+            Console.WriteLine($"Estate with CustomId {estate.Id} added.");
+            //ConcurrentBag<Parcel> parcelsToUpdate = new ConcurrentBag<Parcel>(
+            //    quadTree.FindByRectangle(new QuadTreeRectangle<double>(estate.TopLeft.X, estate.TopLeft.Y, estate.Width, estate.Height))
+            //    .OfType<Parcel>()
+            //);
 
-            foreach (var parcel in quadTree.FindByRectangle(new QuadTreeRectangle<double>(estate.TopLeft.X, estate.TopLeft.Y, estate.Width, estate.Height)))
-            {
-                if (parcel is Parcel)
-                {
-                    ((Parcel)parcel).AddEstate(estate);
-                }
-            }
+            //Parallel.ForEach(parcelsToUpdate, parcel =>
+            //{
+            //    parcel.AddEstate(estate);
+            //});
         }
+
 
         public void AddParcel(int userId, string desc,
             (double lat, double lon, char latPos, char lonPos) topLeft,
@@ -36,15 +41,18 @@ namespace AUS2_Sem1.GeoProject
         {
             var parcel = new Parcel(userId, desc, GeoType.Parcel, topLeft, topRight);
             quadTree.Insert(parcel);
+            Console.WriteLine($"Parcel with CustomId {parcel.Id} added.");
+            //ConcurrentBag<Estate> estatesToUpdate = new ConcurrentBag<Estate>(
+            //    quadTree.FindByRectangle(new QuadTreeRectangle<double>(parcel.TopLeft.X, parcel.TopLeft.Y, parcel.Width, parcel.Height))
+            //    .OfType<Estate>()
+            //);
 
-            foreach (var estate in quadTree.FindByRectangle(new QuadTreeRectangle<double>(parcel.TopLeft.X, parcel.TopLeft.Y, parcel.Width, parcel.Height)))
-            {
-                if (estate is Estate)
-                {
-                    ((Estate)estate).AddParcel(parcel);
-                }
-            }
+            //Parallel.ForEach(estatesToUpdate, estate =>
+            //{
+            //    estate.AddParcel(parcel);
+            //});
         }
+
 
         public void DeleteEstate(int id, double x, double y)
         {
@@ -52,10 +60,12 @@ namespace AUS2_Sem1.GeoProject
             var toDelete = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
             if (toDelete != null)
             {
-                foreach (var parcel in toDelete.GetParcels())
+                ConcurrentBag<Parcel> parcelsToRemove = new ConcurrentBag<Parcel>(toDelete.GetParcels());
+
+                Parallel.ForEach(parcelsToRemove, parcel =>
                 {
                     parcel.GetEstates().Remove(toDelete);
-                }
+                });
 
                 quadTree.Delete(toDelete);
             }
@@ -71,10 +81,12 @@ namespace AUS2_Sem1.GeoProject
             var toDelete = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
             if (toDelete != null)
             {
-                foreach (var estate in toDelete.GetEstates())
+                ConcurrentBag<Estate> estatesToRemove = new ConcurrentBag<Estate>(toDelete.GetEstates());
+
+                Parallel.ForEach(estatesToRemove, estate =>
                 {
                     estate.GetParcels().Remove(toDelete);
-                }
+                });
 
                 quadTree.Delete(toDelete);
             }
@@ -140,37 +152,37 @@ namespace AUS2_Sem1.GeoProject
             {
                 writer.WriteLine("GeoPR_AUS2_SEM1");
 
-                Stack<QuadTreeNode<T>> stack = new Stack<QuadTreeNode<T>>();
-                stack.Push(Root);
-
-                while (stack.Count > 0)
+                ConcurrentBag<QuadTreeNode<double>> concurrentBag = new ConcurrentBag<QuadTreeNode<double>>
                 {
-                    QuadTreeNode<T> currentNode = stack.Pop();
+                    quadTree.Root
+                };
 
+                Parallel.ForEach(concurrentBag, currentNode =>
+                {
                     foreach (var region in currentNode.Regions)
                     {
                         if (region is Parcel parcel)
                         {
-                            writer.Write("PARCEL:");
-                            writer.Write($"{parcel.IdNumberByUser},-,{parcel.Description},-,{parcel.TopLeft.X},-,{parcel.TopLeft.Y},-,{parcel.TopLeft.XPosition},-,{parcel.TopLeft.YPosition}");
+                            writer.Write("PARCEL,-,");
+                            writer.Write($"{parcel.IdNumberByUser},-,{parcel.Description},-,{parcel.TopLeft.X},-,{parcel.TopLeft.Y},-,{parcel.TopLeft.XPosition.PositionToChar()},-,{parcel.TopLeft.YPosition.PositionToChar()}");
                             writer.WriteLine();
                         }
                         else if (region is Estate estate)
                         {
-                            writer.Write("ESTATE:");
-                            writer.Write($"{estate.IdNumberByUser},-,{estate.Description},-,{estate.TopLeft.X},-,{estate.TopLeft.Y},-,{estate.TopLeft.XPosition},-,{estate.TopLeft.YPosition}");
+                            writer.Write("ESTATE,-,");
+                            writer.Write($"{estate.IdNumberByUser},-,{estate.Description},-,{estate.TopLeft.X},-,{estate.TopLeft.Y},-,{estate.TopLeft.XPosition.PositionToChar()},-,{estate.TopLeft.YPosition.PositionToChar()}");
                             writer.WriteLine();
                         }
                     }
 
                     if (!currentNode.IsLeaf)
                     {
-                        foreach (var child in currentNode.Children)
+                        Parallel.ForEach(currentNode.Children, child =>
                         {
-                            stack.Push(child);
-                        }
+                            concurrentBag.Add(child);
+                        });
                     }
-                }
+                });
             }
         }
 
@@ -179,22 +191,32 @@ namespace AUS2_Sem1.GeoProject
             using (StreamReader reader = new StreamReader(filePath))
             {
                 string line = reader.ReadLine();
-                if (line != "GeoPR_AUS2_SEM1")
+                if (line == "GeoPR_AUS2_SEM1")
                 {
-                    throw new Exception("Invalid file format.");
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        try
+                        {
+                            string[] data = line.Split(',');
+                            if (data[0] == "PARCEL")
+                            {
+                                AddParcel(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
+                            }
+                            else if (data[0] == "ESTATE")
+                            {
+                                AddEstate(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Wrong file format.");
+                            return;
+                        }
+                    }
                 }
-
-                while ((line = reader.ReadLine()) != null)
+                else
                 {
-                    string[] data = line.Split(',');
-                    if (data[0] == "PARCEL")
-                    {
-                        AddParcel(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
-                    }
-                    else if (data[0] == "ESTATE")
-                    {
-                        AddEstate(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
-                    }
+                    Console.WriteLine("Wrong file format.");
                 }
             }
         }   
