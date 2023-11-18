@@ -2,7 +2,6 @@ using AUS2_Sem1.GeoProject;
 using AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic;
 using AUS2_Sem1_withGUI.GeoProject;
 using AUS2_Sem1_withGUI.Utils;
-using System.Data;
 
 namespace AUS2_Sem1_withGUI
 {
@@ -10,22 +9,12 @@ namespace AUS2_Sem1_withGUI
     {
         private Controller GeoSystem;
         private Random GeoRandom = new Random();
+        private static bool QuadTreeExists { get; set; }
 
         public Form1()
         {
             InitializeComponent();
-
-            DataGridView dataGridView1 = new DataGridView();
-            Controls.Add(dataGridView1);
-
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("ID", typeof(int));
-            dataTable.Columns.Add("Type", typeof(string));
-            dataTable.Columns.Add("Adad", typeof(string));
-            dataGridView1.DataSource = dataTable;
-
-            var boundary = new QuadTreeRectangle<double>(0, 0, 1000, 1000);
-            GeoSystem = new Controller(boundary, 4);
+            QuadTreeExists = false;
         }
 
         #region Menu File
@@ -36,6 +25,7 @@ namespace AUS2_Sem1_withGUI
             openFileDialog1.ShowDialog();
             var path = openFileDialog1.FileName;
             GeoSystem.LoadData(path);
+            QuadTreeExists = true;
         }
         #endregion
 
@@ -242,8 +232,8 @@ namespace AUS2_Sem1_withGUI
 
         private void CreateRandomEstate(Random random)
         {
-            double x = random.NextDouble() * 998.69;
-            double y = random.NextDouble() * 998.69;
+            double x = random.NextDouble() * 98.69;
+            double y = random.NextDouble() * 98.69;
             int id = random.Next(1, int.MaxValue);
             GeoSystem.AddEstate(id, "randomDesc", (x, y, 'N', 'E'), (x + 1, y + 1, 'S', 'W'));
             string description = $"Estate {id}";
@@ -252,8 +242,8 @@ namespace AUS2_Sem1_withGUI
 
         private void CreateRandomParcel(Random random)
         {
-            double x = random.NextDouble() * 998.69;
-            double y = random.NextDouble() * 998.69;
+            double x = random.NextDouble() * 98.69;
+            double y = random.NextDouble() * 98.69;
             int id = random.Next(1, int.MaxValue);
             GeoSystem.AddParcel(id, "randomDesc", (x, y, 'N', 'E'), (x + 1, y + 1, 'S', 'W'));
             string description = $"Parcel {id}";
@@ -347,11 +337,15 @@ namespace AUS2_Sem1_withGUI
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
 
             Label labelX = new Label() { Left = 50, Top = 140, Text = "Latitude:" };
+            labelX.AutoSize = true;
             TextBox boxX = new TextBox() { Left = 50, Top = 170, Width = 200 };
             Label labelY = new Label() { Left = 50, Top = 200, Text = "Longitude:" };
+            labelY.AutoSize = true;
             TextBox boxY = new TextBox() { Left = 50, Top = 230, Width = 200 };
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 260 };
+            confirmation.AutoSize = true;
             Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 260 };
+            cancel.AutoSize = true;
             confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
             cancel.Click += (sender, e) => { form.Close(); };
             form.Controls.Add(labelX);
@@ -362,6 +356,13 @@ namespace AUS2_Sem1_withGUI
             form.Controls.Add(cancel);
             form.AcceptButton = confirmation;
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             try
@@ -380,6 +381,61 @@ namespace AUS2_Sem1_withGUI
         }
         #endregion GPS Position
 
+        #region New
+        private static DialogResult NewProject(string title, ref double x, ref double y, ref int height)
+        {
+            Form form = new Form();
+            //form.AutoSize = true;
+            form.Height = 600;
+            form.Width = 600;
+            form.Text = title;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            Label labelX = new Label() { Left = 50, Top = 20, Text = "From:" };
+            labelX.AutoSize = true;
+            TextBox boxX = new TextBox() { Left = 50, Top = 60, Width = 200 };
+            Label labelY = new Label() { Left = 50, Top = 100, Text = "To:" };
+            labelY.AutoSize = true;
+            TextBox boxY = new TextBox() { Left = 50, Top = 140, Width = 200 };
+            Label labelHeight = new Label() { Left = 50, Top = 180, Text = "Height:" };
+            labelHeight.AutoSize = true;
+            TextBox boxHeight = new TextBox() { Left = 50, Top = 220, Width = 200 };
+            Button confirmation = new Button() { Left = 350, Width = 100, Top = 260, Text = "Ok" };
+            confirmation.AutoSize = true;
+            Button cancel = new Button() { Left = 250, Width = 100, Top = 260, Text = "Cancel" };
+            cancel.AutoSize = true;
+            confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
+            cancel.Click += (sender, e) => { form.Close(); };
+            form.Controls.Add(labelX);
+            form.Controls.Add(boxX);
+            form.Controls.Add(labelY);
+            form.Controls.Add(boxY);
+            form.Controls.Add(labelHeight);
+            form.Controls.Add(boxHeight);
+            form.Controls.Add(confirmation);
+            form.Controls.Add(cancel);
+            form.AcceptButton = confirmation;
+            form.CancelButton = cancel;
+
+            form.ShowDialog();
+
+            try
+            {
+                x = double.Parse(boxX.Text);
+                y = double.Parse(boxY.Text);
+                height = int.Parse(boxHeight.Text);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return DialogResult.Cancel;
+            }
+
+            return form.DialogResult;
+        }
+        #endregion New
+
         #region Range
         private static DialogResult FindObjectInRange(string title, ref double x1, ref double y1, ref double x2, ref double y2)
         {
@@ -392,15 +448,21 @@ namespace AUS2_Sem1_withGUI
             form.MaximizeBox = false;
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             Label labelX1 = new Label() { Left = 50, Top = 20, Text = "Latitude 1:" };
+            labelX1.AutoSize = true;
             TextBox boxX1 = new TextBox() { Left = 50, Top = 50, Width = 200 };
             Label labelY1 = new Label() { Left = 50, Top = 80, Text = "Longitude 1:" };
+            labelY1.AutoSize = true;
             TextBox boxY1 = new TextBox() { Left = 50, Top = 110, Width = 200 };
             Label labelX2 = new Label() { Left = 50, Top = 140, Text = "Latitude 2:" };
+            labelX2.AutoSize = true;
             TextBox boxX2 = new TextBox() { Left = 50, Top = 170, Width = 200 };
             Label labelY2 = new Label() { Left = 50, Top = 200, Text = "Longitude 2:" };
+            labelY2.AutoSize = true;
             TextBox boxY2 = new TextBox() { Left = 50, Top = 230, Width = 200 };
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 260 };
+            confirmation.AutoSize = true;
             Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 260 };
+            cancel.AutoSize = true;
             confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
             cancel.Click += (sender, e) => { form.Close(); };
             form.Controls.Add(labelX1);
@@ -415,6 +477,13 @@ namespace AUS2_Sem1_withGUI
             form.Controls.Add(cancel);
             form.AcceptButton = confirmation;
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             try
@@ -447,19 +516,27 @@ namespace AUS2_Sem1_withGUI
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
 
             Label labelId = new Label() { Left = 50, Top = 20, Text = "ID:" };
+            labelId.AutoSize = true;
             TextBox boxId = new TextBox() { Left = 50, Top = 45, Width = 400 };
             Label labelDesc = new Label() { Left = 50, Top = 70, Text = "Description:" };
+            labelDesc.AutoSize = true;
             TextBox boxDesc = new TextBox() { Left = 50, Top = 95, Width = 400 };
             Label labelLat1 = new Label() { Left = 50, Top = 120, Text = "Latitude 1:" };
+            labelLat1.AutoSize = true;
             TextBox boxLat1 = new TextBox() { Left = 50, Top = 145, Width = 400 };
             Label labelLon1 = new Label() { Left = 50, Top = 170, Text = "Longitude 1:" };
+            labelLon1.AutoSize = true;
             TextBox boxLon1 = new TextBox() { Left = 50, Top = 195, Width = 400 };
             Label labelLat2 = new Label() { Left = 50, Top = 220, Text = "Latitude 2:" };
+            labelLat2.AutoSize = true;
             TextBox boxLat2 = new TextBox() { Left = 50, Top = 245, Width = 400 };
             Label labelLon2 = new Label() { Left = 50, Top = 270, Text = "Longitude 2:" };
+            labelLon2.AutoSize = true;
             TextBox boxLon2 = new TextBox() { Left = 50, Top = 295, Width = 400 };
             Button confirmation = new Button() { Text = "Add", Left = 350, Width = 100, Top = 320 };
+            confirmation.AutoSize = true;
             Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 320 };
+            cancel.AutoSize = true;
             confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
             cancel.Click += (sender, e) => { form.Close(); };
             form.Controls.Add(labelId);
@@ -478,6 +555,13 @@ namespace AUS2_Sem1_withGUI
             form.Controls.Add(cancel);
             form.AcceptButton = confirmation;
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             try
@@ -500,7 +584,7 @@ namespace AUS2_Sem1_withGUI
         #endregion Create
 
         #region Edit
-        private static DialogResult EditObject(string title, ref int id, ref string desc)
+        private static DialogResult EditObject(string title, ref int id, ref string desc, ref double lat1, ref double lon1, ref double lat2, ref double lon2)
         {
             Form form = new Form();
             //form.AutoSize = true;
@@ -510,31 +594,69 @@ namespace AUS2_Sem1_withGUI
             form.MinimizeBox = false;
             form.MaximizeBox = false;
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
-
             Label labelId = new Label() { Left = 50, Top = 20, Text = "ID:" };
-            TextBox boxId = new TextBox() { Left = 50, Top = 50, Width = 400 };
+            labelId.AutoSize = true;
+            TextBox boxId = new TextBox() { Left = 50, Top = 45, Width = 400 };
             boxId.Text = id.ToString();
-            Label labelDesc = new Label() { Left = 50, Top = 80, Text = "Description:" };
-            TextBox boxDesc = new TextBox() { Left = 50, Top = 110, Width = 400 };
+            Label labelDesc = new Label() { Left = 50, Top = 70, Text = "Description:" };
+            labelDesc.AutoSize = true;
+            TextBox boxDesc = new TextBox() { Left = 50, Top = 95, Width = 400 };
             boxDesc.Text = desc;
-            Button confirmation = new Button() { Text = "Edit", Left = 350, Width = 100, Top = 260 };
-            Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 260 };
-            confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
+            Label labelLat1 = new Label() { Left = 50, Top = 120, Text = "Latitude 1:" };
+            labelLat1.AutoSize = true;
+            TextBox boxLat1 = new TextBox() { Left = 50, Top = 145, Width = 400 };
+            boxLat1.Text = lat1.ToString();
+            Label labelLon1 = new Label() { Left = 50, Top = 170, Text = "Longitude 1:" };
+            labelLon1.AutoSize = true;
+            TextBox boxLon1 = new TextBox() { Left = 50, Top = 195, Width = 400 };
+            boxLon1.Text = lon1.ToString();
+            Label labelLat2 = new Label() { Left = 50, Top = 220, Text = "Latitude 2:" };
+            labelLat2.AutoSize = true;
+            TextBox boxLat2 = new TextBox() { Left = 50, Top = 245, Width = 400 };
+            boxLat2.Text = lat2.ToString();
+            Label labelLon2 = new Label() { Left = 50, Top = 270, Text = "Longitude 2:" };
+            labelLon2.AutoSize = true;
+            TextBox boxLon2 = new TextBox() { Left = 50, Top = 295, Width = 400 };
+            boxLon2.Text = lon2.ToString();
+            Button confirmation = new Button() { Text = "Edit", Left = 350, Width = 100, Top = 320 };
+            confirmation.AutoSize = true;
+            Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 320 };
+            cancel.AutoSize = true;
+            confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.Yes; };
             cancel.Click += (sender, e) => { form.Close(); };
             form.Controls.Add(labelId);
             form.Controls.Add(boxId);
             form.Controls.Add(labelDesc);
             form.Controls.Add(boxDesc);
+            form.Controls.Add(labelLat1);
+            form.Controls.Add(boxLat1);
+            form.Controls.Add(labelLon1);
+            form.Controls.Add(boxLon1);
+            form.Controls.Add(labelLat2);
+            form.Controls.Add(boxLat2);
+            form.Controls.Add(labelLon2);
+            form.Controls.Add(boxLon2);
             form.Controls.Add(confirmation);
             form.Controls.Add(cancel);
             form.AcceptButton = confirmation;
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             try
             {
-                id = int.Parse(boxId.ToString());
+                id = int.Parse(boxId.Text.ToString());
                 desc = boxDesc.Text;
+                lat1 = double.Parse(boxLat1.Text);
+                lat2 = double.Parse(boxLat2.Text);
+                lon1 = double.Parse(boxLon1.Text);
+                lon2 = double.Parse(boxLon2.Text);
             }
             catch (Exception e)
             {
@@ -556,8 +678,11 @@ namespace AUS2_Sem1_withGUI
             form.MaximizeBox = false;
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             Button edit = new Button() { Text = "Edit", Left = 250, Width = 100, Top = 20 };
+            edit.AutoSize = true;
             Button delete = new Button() { Text = "Delete", Left = 350, Width = 100, Top = 20 };
+            delete.AutoSize = true;
             Button cancel = new Button() { Text = "Cancel", Left = 150, Width = 100, Top = 20 };
+            cancel.AutoSize = true;
             edit.Click += (sender, e) => { form.DialogResult = DialogResult.No; };
             delete.Click += (sender, e) => { form.DialogResult = DialogResult.Yes; };
             cancel.Click += (sender, e) => { form.Close(); };
@@ -565,6 +690,13 @@ namespace AUS2_Sem1_withGUI
             form.Controls.Add(edit);
             form.Controls.Add(cancel);
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             return form.DialogResult;
@@ -584,8 +716,11 @@ namespace AUS2_Sem1_withGUI
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
 
             Label labelCount = new Label() { Left = 50, Top = 140, Text = "Are u sure?" };
+            labelCount.AutoSize = true;
             Button confirmation = new Button() { Text = "Delete", Left = 350, Width = 100, Top = 260 };
+            confirmation.AutoSize = true;
             Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 260 };
+            cancel.AutoSize = true;
             confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
             cancel.Click += (sender, e) => { form.Close(); };
             form.Controls.Add(labelCount);
@@ -593,6 +728,13 @@ namespace AUS2_Sem1_withGUI
             form.Controls.Add(cancel);
             form.AcceptButton = confirmation;
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             return form.DialogResult;
@@ -612,9 +754,12 @@ namespace AUS2_Sem1_withGUI
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
 
             Label labelCount = new Label() { Left = 50, Top = 140, Text = "Count:" };
+            labelCount.AutoSize = true;
             TextBox boxCount = new TextBox() { Left = 50, Top = 170, Width = 200 };
             Button confirmation = new Button() { Text = "Ok", Left = 350, Width = 100, Top = 260 };
+            confirmation.AutoSize = true;
             Button cancel = new Button() { Text = "Cancel", Left = 250, Width = 100, Top = 260 };
+            cancel.AutoSize = true;
             confirmation.Click += (sender, e) => { form.DialogResult = DialogResult.OK; };
             cancel.Click += (sender, e) => { form.Close(); };
             form.Controls.Add(labelCount);
@@ -623,6 +768,13 @@ namespace AUS2_Sem1_withGUI
             form.Controls.Add(cancel);
             form.AcceptButton = confirmation;
             form.CancelButton = cancel;
+
+            if (!QuadTreeExists)
+            {
+                form.Close();
+                return DialogResult.Cancel;
+            }
+
             form.ShowDialog();
 
             try
@@ -662,6 +814,12 @@ namespace AUS2_Sem1_withGUI
                 var userId = int.Parse(selectedRow.Cells["idNumberByUserDataGridViewTextBoxColumn"].Value.ToString());
                 var x = double.Parse(selectedRow.Cells["xValue"].Value.ToString());
                 var y = double.Parse(selectedRow.Cells["yValue"].Value.ToString());
+                var lat1 = double.Parse(selectedRow.Cells["xValue"].Value.ToString());
+                var lon1 = double.Parse(selectedRow.Cells["yValue"].Value.ToString());
+                var height = double.Parse(selectedRow.Cells["heightValue"].Value.ToString());
+                var width = double.Parse(selectedRow.Cells["widthValue"].Value.ToString());
+                var lat2 = lat1 + width;
+                var lon2 = lon1 + height;
                 var type = selectedRow.Cells["typeDataGridViewTextBoxColumn"].Value.ToString();
 
                 var operation = EditOrDelete(title: "Edit or Delete");
@@ -669,15 +827,18 @@ namespace AUS2_Sem1_withGUI
                 if (operation == DialogResult.No)
                 {
                     var desc = selectedRow.Cells["descriptionDataGridViewTextBoxColumn"].Value.ToString();
-                    if (EditObject(title: "Edit", ref userId, ref desc) == DialogResult.OK)
+                    var edit = EditObject(title: "Edit", ref userId, ref desc, ref lat1, ref lon1, ref lat2, ref lon2);
+                    if (edit == DialogResult.Yes)
                     {
                         if (type == "Parcel")
                         {
-                            GeoSystem.EditParcel(id, desc, userId, x, y);
+                            GeoSystem.DeleteParcel(id, x, y);
+                            GeoSystem.AddParcel(userId, desc, (lat1, lon1, 'N', 'E'), (lat2, lon2, 'S', 'W'));
                         }
                         else
                         {
-                            GeoSystem.EditEstate(id, desc, userId, x, y);
+                            GeoSystem.DeleteEstate(id, x, y);
+                            GeoSystem.AddEstate(userId, desc, (lat1, lon1, 'N', 'E'), (lat2, lon2, 'S', 'W'));
                         }
                     }
                     else
@@ -713,5 +874,23 @@ namespace AUS2_Sem1_withGUI
         }
 
         #endregion Table
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var x = 0.0;
+            var y = 0.0;
+            var maxHeight = 0;
+
+            if (NewProject(title: "New project", ref x, ref y, ref maxHeight) == DialogResult.OK)
+            {
+                QuadTreeExists = true;
+                var boundary = new QuadTreeRectangle<double>(x, x, y, y);
+                GeoSystem = new Controller(boundary, 4, maxHeight);
+            }
+            else
+            {
+                return;
+            }
+        }
     }
 }

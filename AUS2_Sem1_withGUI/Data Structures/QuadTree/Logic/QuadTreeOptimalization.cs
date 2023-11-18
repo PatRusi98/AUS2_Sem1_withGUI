@@ -5,8 +5,8 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
 {
     public class QuadTreeOptimalization<T> : QuadTree<T> where T : IComparable
     {
-        public QuadTreeOptimalization(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
-            : base(boundary, maxRegionsPerNode)
+        public QuadTreeOptimalization(QuadTreeRectangle<T> boundary, int maxRegionsPerNode, int maxHeight)
+            : base(boundary, maxRegionsPerNode, maxHeight)
         {
         }
 

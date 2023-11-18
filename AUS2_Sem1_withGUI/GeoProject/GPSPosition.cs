@@ -28,6 +28,16 @@ namespace AUS2_Sem1_withGUI.GeoProject
             return Y.CompareTo(other.Y);
         }
 
+        public GPSPosition StringToGPS(string str) 
+        {
+            string[] parts = str.Split(' ');
+            double lat = double.Parse(parts[0]);
+            double lon = double.Parse(parts[1]);
+            char latPos = parts[2][0];
+            char lonPos = parts[3][0];
+            return new GPSPosition(lat, lon, latPos, lonPos);
+        }
+
         public string ToString()
         {
             return $"{X} {XPosition}, {Y} {YPosition}";

@@ -11,9 +11,9 @@ namespace AUS2_Sem1.GeoProject
     {
         private QuadTree<double> quadTree;
 
-        public Controller(QuadTreeRectangle<double> boundary, int maxRegionsPerNode)
+        public Controller(QuadTreeRectangle<double> boundary, int maxRegionsPerNode, int maxHeight)
         {
-            quadTree = new QuadTree<double>(boundary, maxRegionsPerNode);
+            quadTree = new QuadTree<double>(boundary, maxRegionsPerNode, maxHeight);
         }
 
         public void AddEstate(int userId, string desc,
@@ -137,25 +137,25 @@ namespace AUS2_Sem1.GeoProject
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            //var estate = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
-            var estate = FindEstateByPosition(x, y);
-            foreach (var item in estate)
+            var estate = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
+            //var estate = FindEstateByPosition(x, y);
+            //foreach (var item in estate)
+            //{
+            //    if (item.Id == id)
+            //    {
+            //        item.IdNumberByUser = userId;
+            //        item.Description = desc;
+            //    }
+            //}
+            if (estate != null)
             {
-                if (item.Id == id)
-                {
-                    item.IdNumberByUser = userId;
-                    item.Description = desc;
-                }
+                estate.IdNumberByUser = userId;
+                estate.Description = desc;
             }
-            //if (estate != null)
-            //{
-            //    estate.IdNumberByUser = userId;
-            //    estate.Description = desc;
-            //}
-            //else
-            //{
-            //    Console.WriteLine($"Estate with CustomId {id} not found.");
-            //}
+            else
+            {
+                Console.WriteLine($"Estate with CustomId {id} not found.");
+            }
 
             stopwatch.Stop();
             Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
@@ -166,26 +166,26 @@ namespace AUS2_Sem1.GeoProject
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            //var parcel = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
-            var parcel = FindParcelByPosition(x, y);
+            var parcel = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
+            //var parcel = FindParcelByPosition(x, y);
 
-            foreach (var item in parcel)
+            //foreach (var item in parcel)
+            //{
+            //    if (item.Id == id)
+            //    {
+            //        item.IdNumberByUser = userId;
+            //        item.Description = desc;
+            //    }
+            //}
+            if (parcel != null)
             {
-                if (item.Id == id)
-                {
-                    item.IdNumberByUser = userId;
-                    item.Description = desc;
-                }
+                parcel.IdNumberByUser = userId;
+                parcel.Description = desc;
             }
-            //if (parcel != null)
-            //{
-            //    parcel.IdNumberByUser = userId;
-            //    parcel.Description = desc;
-            //}
-            //else
-            //{
-            //    Console.WriteLine($"Parcel with CustomId {id} not found.");
-            //}
+            else
+            {
+                Console.WriteLine($"Parcel with CustomId {id} not found.");
+            }
 
             stopwatch.Stop();
             Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");

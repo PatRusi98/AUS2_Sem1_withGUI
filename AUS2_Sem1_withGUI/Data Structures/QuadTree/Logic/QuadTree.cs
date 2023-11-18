@@ -8,13 +8,14 @@ namespace AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic
         public QuadTreeNode<T> Root;
         protected int MaxRegionsPerNode;
         private IMathOperations<T> MathOperations;
-        protected int MaxHeight = 15;
+        protected int MaxHeight;
 
-        public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode)
+        public QuadTree(QuadTreeRectangle<T> boundary, int maxRegionsPerNode, int maxHeight)
         {
             Root = new QuadTreeNode<T>(boundary);
             MaxRegionsPerNode = maxRegionsPerNode;
             MathOperations = (IMathOperations<T>)new MathOperationsDouble();
+            MaxHeight = maxHeight;
         }
 
         #region Insert

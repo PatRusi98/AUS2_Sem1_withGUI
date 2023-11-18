@@ -31,6 +31,7 @@
             components = new System.ComponentModel.Container();
             menu = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
+            newToolStripMenuItem = new ToolStripMenuItem();
             loadToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
@@ -63,6 +64,8 @@
             topLeftDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             bottomRightDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
             idSystem = new DataGridViewTextBoxColumn();
+            widthValue = new DataGridViewTextBoxColumn();
+            heightValue = new DataGridViewTextBoxColumn();
             menu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)geoObjectBindingSource3).BeginInit();
@@ -73,38 +76,47 @@
             // 
             // menu
             // 
+            menu.ImageScalingSize = new Size(24, 24);
             menu.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, parcelToolStripMenuItem, estateToolStripMenuItem, allObjectsToolStripMenuItem, generatorToolStripMenuItem });
             menu.Location = new Point(0, 0);
             menu.Name = "menu";
-            menu.Size = new Size(569, 24);
+            menu.Padding = new Padding(9, 3, 0, 3);
+            menu.Size = new Size(1513, 35);
             menu.TabIndex = 0;
             menu.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { loadToolStripMenuItem, saveToolStripMenuItem, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, loadToolStripMenuItem, saveToolStripMenuItem, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Size = new Size(54, 29);
             fileToolStripMenuItem.Text = "File";
+            // 
+            // newToolStripMenuItem
+            // 
+            newToolStripMenuItem.Name = "newToolStripMenuItem";
+            newToolStripMenuItem.Size = new Size(181, 34);
+            newToolStripMenuItem.Text = "New";
+            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // loadToolStripMenuItem
             // 
             loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            loadToolStripMenuItem.Size = new Size(119, 22);
+            loadToolStripMenuItem.Size = new Size(181, 34);
             loadToolStripMenuItem.Text = "Load file";
             loadToolStripMenuItem.Click += loadToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(119, 22);
+            saveToolStripMenuItem.Size = new Size(181, 34);
             saveToolStripMenuItem.Text = "Save file";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(119, 22);
+            exitToolStripMenuItem.Size = new Size(181, 34);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
@@ -112,20 +124,20 @@
             // 
             parcelToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addParcelToolStripMenuItem1, findParcelToolStripMenuItem });
             parcelToolStripMenuItem.Name = "parcelToolStripMenuItem";
-            parcelToolStripMenuItem.Size = new Size(51, 20);
+            parcelToolStripMenuItem.Size = new Size(73, 29);
             parcelToolStripMenuItem.Text = "Parcel";
             // 
             // addParcelToolStripMenuItem1
             // 
             addParcelToolStripMenuItem1.Name = "addParcelToolStripMenuItem1";
-            addParcelToolStripMenuItem1.Size = new Size(97, 22);
+            addParcelToolStripMenuItem1.Size = new Size(148, 34);
             addParcelToolStripMenuItem1.Text = "Add";
             addParcelToolStripMenuItem1.Click += addParcelToolStripMenuItem1_Click;
             // 
             // findParcelToolStripMenuItem
             // 
             findParcelToolStripMenuItem.Name = "findParcelToolStripMenuItem";
-            findParcelToolStripMenuItem.Size = new Size(97, 22);
+            findParcelToolStripMenuItem.Size = new Size(148, 34);
             findParcelToolStripMenuItem.Text = "Find";
             findParcelToolStripMenuItem.Click += findParcelToolStripMenuItem_Click;
             // 
@@ -133,20 +145,20 @@
             // 
             estateToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addEstateToolStripMenuItem, findEstateToolStripMenuItem1 });
             estateToolStripMenuItem.Name = "estateToolStripMenuItem";
-            estateToolStripMenuItem.Size = new Size(50, 20);
+            estateToolStripMenuItem.Size = new Size(75, 29);
             estateToolStripMenuItem.Text = "Estate";
             // 
             // addEstateToolStripMenuItem
             // 
             addEstateToolStripMenuItem.Name = "addEstateToolStripMenuItem";
-            addEstateToolStripMenuItem.Size = new Size(97, 22);
+            addEstateToolStripMenuItem.Size = new Size(148, 34);
             addEstateToolStripMenuItem.Text = "Add";
             addEstateToolStripMenuItem.Click += addEstateToolStripMenuItem_Click_1;
             // 
             // findEstateToolStripMenuItem1
             // 
             findEstateToolStripMenuItem1.Name = "findEstateToolStripMenuItem1";
-            findEstateToolStripMenuItem1.Size = new Size(97, 22);
+            findEstateToolStripMenuItem1.Size = new Size(148, 34);
             findEstateToolStripMenuItem1.Text = "Find";
             findEstateToolStripMenuItem1.Click += findEstateToolStripMenuItem1_Click;
             // 
@@ -154,13 +166,13 @@
             // 
             allObjectsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { findAllInRangeToolStripMenuItem });
             allObjectsToolStripMenuItem.Name = "allObjectsToolStripMenuItem";
-            allObjectsToolStripMenuItem.Size = new Size(74, 20);
+            allObjectsToolStripMenuItem.Size = new Size(110, 29);
             allObjectsToolStripMenuItem.Text = "All objects";
             // 
             // findAllInRangeToolStripMenuItem
             // 
             findAllInRangeToolStripMenuItem.Name = "findAllInRangeToolStripMenuItem";
-            findAllInRangeToolStripMenuItem.Size = new Size(167, 22);
+            findAllInRangeToolStripMenuItem.Size = new Size(251, 34);
             findAllInRangeToolStripMenuItem.Text = "Find all in range...";
             findAllInRangeToolStripMenuItem.Click += findAllInRangeToolStripMenuItem_Click;
             // 
@@ -168,41 +180,41 @@
             // 
             generatorToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addToolStripMenuItem, randomOperationsToolStripMenuItem });
             generatorToolStripMenuItem.Name = "generatorToolStripMenuItem";
-            generatorToolStripMenuItem.Size = new Size(71, 20);
+            generatorToolStripMenuItem.Size = new Size(106, 29);
             generatorToolStripMenuItem.Text = "Generator";
             // 
             // addToolStripMenuItem
             // 
             addToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { parcelsToolStripMenuItem, estatesToolStripMenuItem, randomObjectsToolStripMenuItem });
             addToolStripMenuItem.Name = "addToolStripMenuItem";
-            addToolStripMenuItem.Size = new Size(178, 22);
+            addToolStripMenuItem.Size = new Size(272, 34);
             addToolStripMenuItem.Text = "Add...";
             // 
             // parcelsToolStripMenuItem
             // 
             parcelsToolStripMenuItem.Name = "parcelsToolStripMenuItem";
-            parcelsToolStripMenuItem.Size = new Size(160, 22);
+            parcelsToolStripMenuItem.Size = new Size(244, 34);
             parcelsToolStripMenuItem.Text = "Parcels";
             parcelsToolStripMenuItem.Click += parcelsToolStripMenuItem_Click;
             // 
             // estatesToolStripMenuItem
             // 
             estatesToolStripMenuItem.Name = "estatesToolStripMenuItem";
-            estatesToolStripMenuItem.Size = new Size(160, 22);
+            estatesToolStripMenuItem.Size = new Size(244, 34);
             estatesToolStripMenuItem.Text = "Estates";
             estatesToolStripMenuItem.Click += estatesToolStripMenuItem_Click;
             // 
             // randomObjectsToolStripMenuItem
             // 
             randomObjectsToolStripMenuItem.Name = "randomObjectsToolStripMenuItem";
-            randomObjectsToolStripMenuItem.Size = new Size(160, 22);
+            randomObjectsToolStripMenuItem.Size = new Size(244, 34);
             randomObjectsToolStripMenuItem.Text = "Random objects";
             randomObjectsToolStripMenuItem.Click += randomObjectsToolStripMenuItem_Click;
             // 
             // randomOperationsToolStripMenuItem
             // 
             randomOperationsToolStripMenuItem.Name = "randomOperationsToolStripMenuItem";
-            randomOperationsToolStripMenuItem.Size = new Size(178, 22);
+            randomOperationsToolStripMenuItem.Size = new Size(272, 34);
             randomOperationsToolStripMenuItem.Text = "Random operations";
             randomOperationsToolStripMenuItem.Click += randomOperationsToolStripMenuItem_Click;
             // 
@@ -212,13 +224,15 @@
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { typeDataGridViewTextBoxColumn, xValue, yValue, idNumberByUserDataGridViewTextBoxColumn, descriptionDataGridViewTextBoxColumn, topLeftDataGridViewTextBoxColumn, bottomRightDataGridViewTextBoxColumn, idSystem });
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { typeDataGridViewTextBoxColumn, xValue, yValue, idNumberByUserDataGridViewTextBoxColumn, descriptionDataGridViewTextBoxColumn, topLeftDataGridViewTextBoxColumn, bottomRightDataGridViewTextBoxColumn, idSystem, widthValue, heightValue });
             dataGridView1.DataSource = geoObjectBindingSource3;
-            dataGridView1.Location = new Point(12, 27);
+            dataGridView1.Location = new Point(13, 40);
+            dataGridView1.Margin = new Padding(4, 5, 4, 5);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
+            dataGridView1.RowHeadersWidth = 62;
             dataGridView1.RowTemplate.Height = 25;
-            dataGridView1.Size = new Size(545, 492);
+            dataGridView1.Size = new Size(1487, 826);
             dataGridView1.TabIndex = 1;
             dataGridView1.CellClick += dataGridView1_CellClick;
             dataGridView1.CellContentClick += dataGridView1_CellContentClick;
@@ -247,69 +261,106 @@
             // 
             typeDataGridViewTextBoxColumn.DataPropertyName = "Type";
             typeDataGridViewTextBoxColumn.HeaderText = "Type";
+            typeDataGridViewTextBoxColumn.MinimumWidth = 8;
             typeDataGridViewTextBoxColumn.Name = "typeDataGridViewTextBoxColumn";
             typeDataGridViewTextBoxColumn.ReadOnly = true;
+            typeDataGridViewTextBoxColumn.Width = 150;
             // 
             // xValue
             // 
             xValue.DataPropertyName = "X";
             xValue.HeaderText = "xValue";
+            xValue.MinimumWidth = 8;
             xValue.Name = "xValue";
             xValue.ReadOnly = true;
             xValue.Visible = false;
+            xValue.Width = 150;
             // 
             // yValue
             // 
             yValue.DataPropertyName = "Y";
             yValue.HeaderText = "yValue";
+            yValue.MinimumWidth = 8;
             yValue.Name = "yValue";
             yValue.ReadOnly = true;
             yValue.Visible = false;
+            yValue.Width = 150;
             // 
             // idNumberByUserDataGridViewTextBoxColumn
             // 
             idNumberByUserDataGridViewTextBoxColumn.DataPropertyName = "IdNumberByUser";
             idNumberByUserDataGridViewTextBoxColumn.HeaderText = "ID";
+            idNumberByUserDataGridViewTextBoxColumn.MinimumWidth = 8;
             idNumberByUserDataGridViewTextBoxColumn.Name = "idNumberByUserDataGridViewTextBoxColumn";
             idNumberByUserDataGridViewTextBoxColumn.ReadOnly = true;
+            idNumberByUserDataGridViewTextBoxColumn.Width = 150;
             // 
             // descriptionDataGridViewTextBoxColumn
             // 
             descriptionDataGridViewTextBoxColumn.DataPropertyName = "Description";
             descriptionDataGridViewTextBoxColumn.HeaderText = "Description";
+            descriptionDataGridViewTextBoxColumn.MinimumWidth = 8;
             descriptionDataGridViewTextBoxColumn.Name = "descriptionDataGridViewTextBoxColumn";
             descriptionDataGridViewTextBoxColumn.ReadOnly = true;
+            descriptionDataGridViewTextBoxColumn.Width = 150;
             // 
             // topLeftDataGridViewTextBoxColumn
             // 
             topLeftDataGridViewTextBoxColumn.DataPropertyName = "TopLeftString";
             topLeftDataGridViewTextBoxColumn.HeaderText = "GPS 1";
+            topLeftDataGridViewTextBoxColumn.MinimumWidth = 8;
             topLeftDataGridViewTextBoxColumn.Name = "topLeftDataGridViewTextBoxColumn";
             topLeftDataGridViewTextBoxColumn.ReadOnly = true;
+            topLeftDataGridViewTextBoxColumn.Width = 150;
             // 
             // bottomRightDataGridViewTextBoxColumn
             // 
             bottomRightDataGridViewTextBoxColumn.DataPropertyName = "BottomRightString";
             bottomRightDataGridViewTextBoxColumn.HeaderText = "GPS 2";
+            bottomRightDataGridViewTextBoxColumn.MinimumWidth = 8;
             bottomRightDataGridViewTextBoxColumn.Name = "bottomRightDataGridViewTextBoxColumn";
             bottomRightDataGridViewTextBoxColumn.ReadOnly = true;
+            bottomRightDataGridViewTextBoxColumn.Width = 150;
             // 
             // idSystem
             // 
             idSystem.DataPropertyName = "Id";
             idSystem.HeaderText = "SystemID";
+            idSystem.MinimumWidth = 8;
             idSystem.Name = "idSystem";
             idSystem.ReadOnly = true;
             idSystem.Visible = false;
+            idSystem.Width = 150;
+            // 
+            // widthValue
+            // 
+            widthValue.DataPropertyName = "Width";
+            widthValue.HeaderText = "Width";
+            widthValue.MinimumWidth = 8;
+            widthValue.Name = "widthValue";
+            widthValue.ReadOnly = true;
+            widthValue.Visible = false;
+            widthValue.Width = 150;
+            // 
+            // heightValue
+            // 
+            heightValue.DataPropertyName = "Height";
+            heightValue.HeaderText = "Height";
+            heightValue.MinimumWidth = 8;
+            heightValue.Name = "heightValue";
+            heightValue.ReadOnly = true;
+            heightValue.Visible = false;
+            heightValue.Width = 150;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(569, 531);
+            ClientSize = new Size(1513, 885);
             Controls.Add(dataGridView1);
             Controls.Add(menu);
             MainMenuStrip = menu;
+            Margin = new Padding(4, 5, 4, 5);
             MaximizeBox = false;
             Name = "Form1";
             Text = "GeoObject";
@@ -355,6 +406,7 @@
         private BindingSource geoObjectBindingSource;
         private BindingSource geoObjectBindingSource1;
         private BindingSource geoObjectBindingSource3;
+        private ToolStripMenuItem newToolStripMenuItem;
         private DataGridViewTextBoxColumn typeDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn xValue;
         private DataGridViewTextBoxColumn yValue;
@@ -363,5 +415,7 @@
         private DataGridViewTextBoxColumn topLeftDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn bottomRightDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn idSystem;
+        private DataGridViewTextBoxColumn widthValue;
+        private DataGridViewTextBoxColumn heightValue;
     }
 }
