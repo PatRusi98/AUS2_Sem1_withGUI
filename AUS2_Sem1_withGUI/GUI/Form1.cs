@@ -2,6 +2,7 @@ using AUS2_Sem1.GeoProject;
 using AUS2_Sem1_withGUI.Data_Structures.QuadTree.Logic;
 using AUS2_Sem1_withGUI.GeoProject;
 using AUS2_Sem1_withGUI.Utils;
+using System.Runtime.CompilerServices;
 
 namespace AUS2_Sem1_withGUI
 {
@@ -9,6 +10,7 @@ namespace AUS2_Sem1_withGUI
     {
         private Controller GeoSystem;
         private Random GeoRandom = new Random();
+        private double maxRange;
         private static bool QuadTreeExists { get; set; }
 
         public Form1()
@@ -291,8 +293,8 @@ namespace AUS2_Sem1_withGUI
 
         private void CreateRandomEstate(Random random)
         {
-            double x = random.NextDouble() * 98.69;
-            double y = random.NextDouble() * 98.69;
+            double x = random.NextDouble() * maxRange * 0.9869;
+            double y = random.NextDouble() * maxRange * 0.9869;
             int id = random.Next(1, int.MaxValue);
             GeoSystem.AddEstate(id, "randomDesc", (x, y, 'N', 'E'), (x + 1, y + 1, 'S', 'W'));
             string description = $"Estate {id}";
@@ -301,8 +303,8 @@ namespace AUS2_Sem1_withGUI
 
         private void CreateRandomParcel(Random random)
         {
-            double x = random.NextDouble() * 98.69;
-            double y = random.NextDouble() * 98.69;
+            double x = random.NextDouble() * maxRange * 0.9869;
+            double y = random.NextDouble() * maxRange * 0.9869;
             int id = random.Next(1, int.MaxValue);
             GeoSystem.AddParcel(id, "randomDesc", (x, y, 'N', 'E'), (x + 1, y + 1, 'S', 'W'));
             string description = $"Parcel {id}";
@@ -951,6 +953,7 @@ namespace AUS2_Sem1_withGUI
         {
             var x = 0.0;
             var y = 0.0;
+            maxRange = y;
             var maxHeight = 0;
 
             if (NewProject(title: "New project", ref x, ref y, ref maxHeight) == DialogResult.OK)
