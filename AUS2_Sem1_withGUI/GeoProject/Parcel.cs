@@ -31,5 +31,16 @@ namespace AUS2_Sem1_withGUI.GeoProject
         {
             return estates;
         }
+
+        public string GetEstatesString()
+        {
+            string estatesString = "Estates: \n\n";
+            foreach (var estate in estates)
+            {
+                estatesString += $"Id: {estate.IdNumberByUser}, {estate.Description}, {estate.TopLeftString}, {estate.BottomRightString} + \n";
+            }
+
+            return estatesString;
+        }
     }
 }

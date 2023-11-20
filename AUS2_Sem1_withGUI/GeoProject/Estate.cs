@@ -31,5 +31,16 @@ namespace AUS2_Sem1_withGUI.GeoProject
         {
             return parcels;
         }
+
+        public string GetParcelsString()
+        {
+            string parcelsString = "Parcels: \n\n";
+            foreach (var parcel in parcels)
+            {
+                parcelsString += $"Id: {parcel.IdNumberByUser}, {parcel.Description}, {parcel.TopLeftString}, {parcel.BottomRightString} + \n";
+            }
+
+            return parcelsString;
+        }
     }
 }

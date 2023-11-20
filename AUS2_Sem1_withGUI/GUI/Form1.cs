@@ -22,9 +22,66 @@ namespace AUS2_Sem1_withGUI
         #region Load
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
-            var path = openFileDialog1.FileName;
-            GeoSystem.LoadData(path);
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var path = openFileDialog1.FileName;
+
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    string line = reader.ReadLine();
+                    if (line == "GeoPR_AUS2_SEM1")
+                    {
+                        if ((line = reader.ReadLine()) != null)
+                        {
+                            try
+                            {
+                                string[] qtData = line.Split(';');
+                                if (qtData[0] == "QUADTREE")
+                                {
+                                    var newBoundary = new QuadTreeRectangle<double>(double.Parse(qtData[1]), double.Parse(qtData[2]), double.Parse(qtData[3]), double.Parse(qtData[4]));
+                                    GeoSystem = new Controller(newBoundary, int.Parse(qtData[5]), int.Parse(qtData[6]));
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Wrong file format.");
+                                    return;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                Console.WriteLine("Wrong file format.");
+                                return;
+                            }
+
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                try
+                                {
+                                    string[] data = line.Split(';');
+                                    if (data[0] == "PARCEL")
+                                    {
+                                        GeoSystem.AddParcel(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[4]), data[5][0], data[6][0]), (double.Parse(data[7]), double.Parse(data[8]), data[9][0], data[10][0]));
+                                    }
+                                    else if (data[0] == "ESTATE")
+                                    {
+                                        GeoSystem.AddEstate(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[4]), data[5][0], data[6][0]), (double.Parse(data[7]), double.Parse(data[8]), data[9][0], data[10][0]));
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    Console.WriteLine("Wrong file format.");
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong file format.");
+                    }
+                }
+            }
+
             QuadTreeExists = true;
         }
         #endregion
@@ -32,9 +89,11 @@ namespace AUS2_Sem1_withGUI
         #region Save
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.ShowDialog();
-            var path = saveFileDialog1.FileName;
-            GeoSystem.SaveData(path);
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var path = saveFileDialog1.FileName;
+                GeoSystem.SaveData(path);
+            }
         }
         #endregion
 
@@ -667,7 +726,7 @@ namespace AUS2_Sem1_withGUI
             return form.DialogResult;
         }
 
-        private static DialogResult EditOrDelete(string title)
+        private static DialogResult EditOrDelete(string title, string detail)
         {
             Form form = new Form();
             //form.AutoSize = true;
@@ -677,15 +736,18 @@ namespace AUS2_Sem1_withGUI
             form.MinimizeBox = false;
             form.MaximizeBox = false;
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
-            Button edit = new Button() { Text = "Edit", Left = 250, Width = 100, Top = 20 };
+            Label labelDetail = new Label() { Left = 50, Top = 20, Text = detail };
+            labelDetail.AutoSize = true;
+            Button edit = new Button() { Text = "Edit", Left = 250, Width = 100, Top = 200 };
             edit.AutoSize = true;
-            Button delete = new Button() { Text = "Delete", Left = 350, Width = 100, Top = 20 };
+            Button delete = new Button() { Text = "Delete", Left = 350, Width = 100, Top = 200 };
             delete.AutoSize = true;
-            Button cancel = new Button() { Text = "Cancel", Left = 150, Width = 100, Top = 20 };
+            Button cancel = new Button() { Text = "Cancel", Left = 150, Width = 100, Top = 200 };
             cancel.AutoSize = true;
             edit.Click += (sender, e) => { form.DialogResult = DialogResult.No; };
             delete.Click += (sender, e) => { form.DialogResult = DialogResult.Yes; };
             cancel.Click += (sender, e) => { form.Close(); };
+            form.Controls.Add(labelDetail);
             form.Controls.Add(delete);
             form.Controls.Add(edit);
             form.Controls.Add(cancel);
@@ -822,7 +884,17 @@ namespace AUS2_Sem1_withGUI
                 var lon2 = lon1 + height;
                 var type = selectedRow.Cells["typeDataGridViewTextBoxColumn"].Value.ToString();
 
-                var operation = EditOrDelete(title: "Edit or Delete");
+                var detail = "";
+                if (type == "Parcel")
+                {
+                    detail = GeoSystem.FindParcelById(id, x, y).GetEstatesString();
+                }
+                else
+                {
+                    detail = GeoSystem.FindEstateById(id, x, y).GetParcelsString();
+                }
+
+                var operation = EditOrDelete(title: "Edit or Delete", detail);
 
                 if (operation == DialogResult.No)
                 {
@@ -890,6 +962,14 @@ namespace AUS2_Sem1_withGUI
             else
             {
                 return;
+            }
+        }
+
+        private void findAllObjectsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (QuadTreeExists)
+            {
+                dataGridView1.DataSource = GeoSystem.FindAllObjects();
             }
         }
     }

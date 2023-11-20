@@ -10,10 +10,16 @@ namespace AUS2_Sem1.GeoProject
     public class Controller
     {
         private QuadTree<double> quadTree;
+        private QuadTreeRectangle<double> _boundary;
+        private int regionsPerNode;
+        private int height;
 
         public Controller(QuadTreeRectangle<double> boundary, int maxRegionsPerNode, int maxHeight)
         {
+            _boundary = boundary;
             quadTree = new QuadTree<double>(boundary, maxRegionsPerNode, maxHeight);
+            regionsPerNode = maxRegionsPerNode;
+            height = maxHeight;
         }
 
         public void AddEstate(int userId, string desc,
@@ -138,15 +144,6 @@ namespace AUS2_Sem1.GeoProject
             stopwatch.Start();
 
             var estate = FindEstateByPosition(x, y).Find(obj => obj.Id == id);
-            //var estate = FindEstateByPosition(x, y);
-            //foreach (var item in estate)
-            //{
-            //    if (item.Id == id)
-            //    {
-            //        item.IdNumberByUser = userId;
-            //        item.Description = desc;
-            //    }
-            //}
             if (estate != null)
             {
                 estate.IdNumberByUser = userId;
@@ -167,16 +164,6 @@ namespace AUS2_Sem1.GeoProject
             stopwatch.Start();
 
             var parcel = FindParcelByPosition(x, y).Find(obj => obj.Id == id);
-            //var parcel = FindParcelByPosition(x, y);
-
-            //foreach (var item in parcel)
-            //{
-            //    if (item.Id == id)
-            //    {
-            //        item.IdNumberByUser = userId;
-            //        item.Description = desc;
-            //    }
-            //}
             if (parcel != null)
             {
                 parcel.IdNumberByUser = userId;
@@ -189,6 +176,32 @@ namespace AUS2_Sem1.GeoProject
 
             stopwatch.Stop();
             Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+        }
+
+        public Parcel FindParcelById(int id, double lat, double lon)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var result = FindParcelByPosition(lat, lon).Find(obj => obj.Id == id);
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
+            return result;
+        }
+
+        public Estate FindEstateById(int id, double lat, double lon)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var result = FindEstateByPosition(lat, lon).Find(obj => obj.Id == id);
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
+            return result;
         }
 
         public List<Parcel> FindParcelByPosition(double lat, double lon)
@@ -233,81 +246,47 @@ namespace AUS2_Sem1.GeoProject
             return result.ToList();
         }
 
+        public List<GeoObject> FindAllObjects()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var unfiltered = FindByRegion(_boundary.X, _boundary.Y, _boundary.X + _boundary.Width, _boundary.Y + _boundary.Height);
+            var result = unfiltered.OfType<GeoObject>();
+
+            stopwatch.Stop();
+            Console.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
+
+            return result.ToList();
+        }
+
         #region Save/Load
         public void SaveData(string filePath)
         {
             using (StreamWriter writer = new StreamWriter(filePath))
             {
                 writer.WriteLine("GeoPR_AUS2_SEM1");
+                writer.WriteLine($"QUADTREE;{_boundary.X};{_boundary.Y};{_boundary.Width};{_boundary.Height};{regionsPerNode};{height}");
 
-                ConcurrentBag<QuadTreeNode<double>> concurrentBag = new ConcurrentBag<QuadTreeNode<double>>
+                var objects = FindAllObjects();
+
+                foreach (var item in objects)
                 {
-                    quadTree.Root
-                };
-
-                Parallel.ForEach(concurrentBag, currentNode =>
-                {
-                    foreach (var region in currentNode.Regions)
+                    if (item is Parcel parcel)
                     {
-                        if (region is Parcel parcel)
-                        {
-                            writer.Write("PARCEL,-,");
-                            writer.Write($"{parcel.IdNumberByUser},-,{parcel.Description},-,{parcel.TopLeft.X},-,{parcel.TopLeft.Y},-,{parcel.TopLeft.XPosition.PositionToChar()},-,{parcel.TopLeft.YPosition.PositionToChar()}");
-                            writer.WriteLine();
-                        }
-                        else if (region is Estate estate)
-                        {
-                            writer.Write("ESTATE,-,");
-                            writer.Write($"{estate.IdNumberByUser},-,{estate.Description},-,{estate.TopLeft.X},-,{estate.TopLeft.Y},-,{estate.TopLeft.XPosition.PositionToChar()},-,{estate.TopLeft.YPosition.PositionToChar()}");
-                            writer.WriteLine();
-                        }
+                        writer.Write("PARCEL;");
+                        writer.Write($"{parcel.IdNumberByUser};{parcel.Description};{parcel.TopLeft.X};{parcel.TopLeft.Y};{parcel.TopLeft.XPosition.PositionToChar()};{parcel.TopLeft.YPosition.PositionToChar()};{parcel.BottomRight.X};{parcel.BottomRight.Y};{parcel.BottomRight.XPosition.PositionToChar()};{parcel.BottomRight.YPosition.PositionToChar()}");
+                        writer.WriteLine();
                     }
-
-                    if (!currentNode.IsLeaf)
+                    else if (item is Estate estate)
                     {
-                        Parallel.ForEach(currentNode.Children, child =>
-                        {
-                            concurrentBag.Add(child);
-                        });
+                        writer.Write("ESTATE;");
+                        writer.Write($"{estate.IdNumberByUser};{estate.Description};{estate.TopLeft.X};{estate.TopLeft.Y};{estate.TopLeft.XPosition.PositionToChar()};{estate.TopLeft.YPosition.PositionToChar()};{estate.BottomRight.X};{estate.BottomRight.Y};{estate.BottomRight.XPosition.PositionToChar()};{estate.BottomRight.YPosition.PositionToChar()}");
+                        writer.WriteLine();
                     }
-                });
+                }
             }
         }
-
-        public void LoadData(string filePath)
-        {
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                string line = reader.ReadLine();
-                if (line == "GeoPR_AUS2_SEM1")
-                {
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        try
-                        {
-                            string[] data = line.Split(',');
-                            if (data[0] == "PARCEL")
-                            {
-                                AddParcel(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
-                            }
-                            else if (data[0] == "ESTATE")
-                            {
-                                AddEstate(int.Parse(data[1]), data[2], (double.Parse(data[3]), double.Parse(data[5]), data[7][0], data[9][0]), (double.Parse(data[4]), double.Parse(data[6]), data[8][0], data[10][0]));
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Wrong file format.");
-                            return;
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Wrong file format.");
-                }
-            }
-        }   
         #endregion Save/Load
 
         #region Private
